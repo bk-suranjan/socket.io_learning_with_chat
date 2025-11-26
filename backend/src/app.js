@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 
 
 import useRoute from '../src/routes/user.routes.js'
+import frinedRoute from '../src/routes/friend.routes.js'
 
 
 export const app = express();
@@ -20,5 +21,6 @@ app.use(express.urlencoded({extended:true,limit:'16kb'}))
 
 
 app.use('/api/v1/user',useRoute)
+app.use('/api/v1/friend',frinedRoute)
 
 connectSocket(server)

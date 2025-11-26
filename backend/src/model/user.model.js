@@ -27,31 +27,13 @@ const userSchema = new Schema({
     friends: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
-    }],
-
-    // ✔️ Friend Requests
-    friendRequest: [
-        {
-            to: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "User"
-            },
-            from: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "User"
-            },
-            status: {
-                type: String,
-                enum: [
-                    "friend",
-                    "friendRequestSend",
-                    "pending",
-                    "friendRequestAccepted"
-                ],
-                default: "pending"
-            }
-        }
-    ]
+     }],
+      friendRequest: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "FriendRequest",
+      }
+    ],
 }, { timestamps: true });
 
 
