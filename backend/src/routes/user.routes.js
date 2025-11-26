@@ -1,10 +1,11 @@
 import express from 'express'
 import User from '../model/user.model.js';
+import protectedRoute from '../middleware/Protected.middleware.js';
 
 const route = express.Router();
 
 
-route.get('/',(req,res)=>{
+route.get('/',protectedRoute,(req,res)=>{
     res.status(200).json({message:'Hello world'})
 })
 
