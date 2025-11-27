@@ -36,7 +36,7 @@ route.post('/requestSend',protectedRoute,async(req,res)=>{
      const sendFriendRequest = await FriendRequest.create({
        to:id,
       from:user._id,
-      status:'requestSend'
+      frinedRequestStatus:'requestSend'
      })
 
      if(!sendFriendRequest){
@@ -71,5 +71,89 @@ route.post('/requestSend',protectedRoute,async(req,res)=>{
     res.status(400).json({message:`internal server error ${error}`})
   }
 })
+
+// get friend request 
+route.get('/requests',protectedRoute,async(req,res)=>{
+  try {
+    const user = req?.user
+    
+    const frinedRequests = await FriendRequest.find({
+      to:user?._id
+    })
+    .populate({path:'to from', select: "-password"   })
+    .sort({createdAt:-1})
+
+    
+
+
+    if(!frinedRequests.length > 0){
+      return res.status(400).json({message:'request not found'})
+    }
+
+
+    res.status(200).json({message:'data fetched',frinedRequests})
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({message:'Internal server error'})
+  }
+})
+
+//accept the request 
+route.post('/requests/:id',protectedRoute,async(req,res)=>{
+  const user = req?.user
+  const {id} = req.params;
+ 
+  try {
+    const friendRequest = await FriendRequest.findOne({
+      to:user._id,
+      from:id,
+      frinedRequestStatus:'requestSend'
+    })
+
+    if(!friendRequest) {
+      return res.status(400).json({message:'request not found'})
+    }
+
+       friendRequest.frinedRequestStatus = 'requestAccepted'
+      await friendRequest.save();
+
+      const updateUser = await User.findByIdAndUpdate(user._id,{
+        $push:{
+          friends:{
+            _id:id
+          }
+        }
+      },{
+          new:true
+        });
+
+        if(!updateUser) {
+          return res.status(400).json({message:'friend request faild to update'})
+        }
+
+        const senderUser = await User.findByIdAndUpdate(id,{
+           $push:{
+          friends:{
+            _id:user._id
+          }
+        }
+        })
+
+         if(!senderUser) {
+          return res.status(400).json({message:'friend request faild to update'})
+        }
+
+        res.status(200).json({message:'friend request accepted'})
+ 
+
+    
+  } catch (error) {
+    console.log(error)
+    res.status(200).json({message:'internal server error'})
+  }
+})
+
+
 
 export default route
