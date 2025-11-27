@@ -11,25 +11,37 @@ export const connectSocket = (server)=>{
 
 
 
-io.on('connection',(socket)=>{
-    console.log('user connected',socket.id)
+// io.on('connection',(socket)=>{
+//     console.log('user connected',socket.id)
 
-    // emit for the send requset .. this is emiting data and this io for public
-    // io.emit('public:emit',`${socket.id} this is connect to this group`)
+//     // emit for the send requset .. this is emiting data and this io for public
+//     // io.emit('public:emit',`${socket.id} this is connect to this group`)
 
-    // socket.emit('private:emit',`this is private`)
-    socket.on('message',(data)=>{
-        socket.to(data.id).emit('personal:message',data.msg)
-    })
+//     // socket.emit('private:emit',`this is private`)
+//     socket.on('message',(data)=>{
+//         socket.to(data.id).emit('personal:message',data.msg)
+//     })
 
-    // this is for group
+//     // this is for group
 
-    socket.on('join:room',(data)=>{
-        socket.join(data)
-    })
+//     socket.on('join:room',(data)=>{
+//         socket.join(data)
+//     })
   
-    socket.on('disconnect',()=>{
-        console.log(`socket id ${socket.id}`)
+//     socket.on('disconnect',()=>{
+//         console.log(`socket id ${socket.id}`)
+//     })
+// })
+
+
+
+io.on('connection',(socket)=>{
+    console.log('user connected')
+
+    socket.on('send:msg',({sendMsg,socketId})=>{
+        console.log(socket.id)
+        socket.emit('mine:msg',sendMsg)
+        socket.to(socketId).emit('receive:msg',sendMsg)
     })
 })
 
